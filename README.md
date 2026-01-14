@@ -3,7 +3,7 @@
 This repository contains the code for the workshop on 
 Characterization-based Error Mitigation for Quantum Computation.
 
-- For easy use (without installing anything on your machine), we recommend running the notebook at [Google Colab](https://colab.research.google.com/github/Qedma/ieee2025-qesem-workshop/blob/main/qesem_lab.ipynb).
+- For easy use (without installing anything on your machine), we recommend running the notebook at [Google Colab](https://colab.research.google.com/github/Qedma/qip-2026-qesem-workshop/blob/main/qesem_lab.ipynb).
 
 - Otherwise, please run main python notebook `qesem_lab.ipynb` to start the workshop using Jupyter Notebook.
 
@@ -13,4 +13,4 @@ Characterization-based Error Mitigation for Quantum Computation.
 
 - For you convenience, requirements can also be installed using poetry from the `poetry.lock` file.
 
-- Solution notebook can be found at [Google Colab](https://colab.research.google.com/github/Qedma/ieee2025-qesem-workshop/blob/main/qesem_lab_solution.ipynb) or at `qesem_lab_solution.ipynb`.
+- Solution notebook can be found at [Google Colab](https://colab.research.google.com/github/Qedma/qip-2026-qesem-workshop/blob/main/qesem_lab_solution.ipynb) or at `qesem_lab_solution.ipynb`.
