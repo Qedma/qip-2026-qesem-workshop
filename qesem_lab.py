@@ -410,7 +410,7 @@ utils.graph_plots(graphs, observable_label_pairs)
 # %%
 # configuration
 # todo add your token here
-qedma_api_token = "mmW_dHllhERPRyiZ-XhIfKN8mzuqnQ4EwmeIJHyITyg"
+qedma_api_token = "45pXqc16Wc4EOLXp-YdsyjP4PeiXVwpiZHrRx-o9Eg0"
 ibm_instance = "crn:v1:bluemix:public:quantum-computing:us-east:a/e04323988bc6476ea650cb531d87b412:4270fa45-5a7c-46cf-8667-d2b1779d2227::"
 
 qedma_client = qedma_api.Client(api_token=qedma_api_token)

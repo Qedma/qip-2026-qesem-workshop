@@ -40,7 +40,7 @@
 # !git clone https://github.com/Qedma/qip-2026-qesem-workshop.git
 
 # %%
-# !pip install "qiskit>=2.0.0" "qiskit-ibm-runtime>=0.40.0" "qiskit-aer>=0.17.1" "networkx>=3.5" "matplotlib==3.10.0" "tqdm>=4.67.1" "scipy" "numpy" "qedma-api==0.18.3"
+# !pip install "qiskit>=2.0.0" "qiskit-ibm-runtime>=0.40.0" "qiskit-aer>=0.17.1" "networkx>=3.5" "matplotlib==3.10.0" "tqdm>=4.67.1" "scipy" "numpy" "qedma-api==0.19.7"
 
 # In case you are running locally, please install jupyter as well:
 # pip install "jupyter>=1.1.1"
@@ -406,7 +406,7 @@ utils.graph_plots(graphs, observable_label_pairs)
 # %%
 # configuration
 # todo add your token here
-qedma_api_token = "mmW_dHllhERPRyiZ-XhIfKN8mzuqnQ4EwmeIJHyITyg"
+qedma_api_token = "45pXqc16Wc4EOLXp-YdsyjP4PeiXVwpiZHrRx-o9Eg0"
 ibm_instance = "crn:v1:bluemix:public:quantum-computing:us-east:a/e04323988bc6476ea650cb531d87b412:4270fa45-5a7c-46cf-8667-d2b1779d2227::"
 
 qedma_client = qedma_api.Client(api_token=qedma_api_token)
