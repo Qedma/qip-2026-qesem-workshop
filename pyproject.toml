@@ -17,7 +17,7 @@ tqdm = ">=4.67.1"
 scipy = "*"
 numpy = "*"
 jupytext = ">=1.17.2"
-qedma-api = "0.18.3"
+qedma-api = "^0.19.7"
 qiskit-ibm-runtime = ">=0.40.0"
 
 

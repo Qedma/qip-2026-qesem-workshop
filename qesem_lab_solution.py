@@ -8,7 +8,7 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.17.2
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: qiskit-summer-school-25-z1QM63Au-py3.12
 #     language: python
 #     name: python3
 # ---
@@ -32,12 +32,12 @@
 # ## Setup
 # We will run the workshop using google colab.
 #
-# Instead, if you prefer, you can clone the [repository](https://github.com/Qedma/ieee2025-qesem-workshop) and install the required packages locally using `pip` or `poetry`.
+# Instead, if you prefer, you can clone the [repository](https://github.com/Qedma/qip-2026-qesem-workshop) and install the required packages locally using `pip` or `poetry`.
 #
 # Use the following commands to clone the repository and install the required packages.
 
 # %%
-# !git clone https://github.com/Qedma/ieee2025-qesem-workshop.git
+# !git clone https://github.com/Qedma/qip-2026-qesem-workshop.git
 
 # %%
 # !pip install "qiskit>=2.0.0" "qiskit-ibm-runtime>=0.40.0" "qiskit-aer>=0.17.1" "networkx>=3.5" "matplotlib==3.10.0" "tqdm>=4.67.1" "scipy" "numpy" "qedma-api==0.18.3"
@@ -46,7 +46,7 @@
 # pip install "jupyter>=1.1.1"
 
 # %%
-# cd /content/ieee2025-qesem-workshop
+# cd /content/qip-2026-qesem-workshop
 
 # %% [markdown]
 # # Imports
@@ -401,13 +401,13 @@ utils.graph_plots(graphs, observable_label_pairs)
 
 # %% [markdown]
 # Here we are initializing the qedma_api client for an IBMQ simulator backend.
-# Note: this API token will be available during the IEEE Quantum Week 2025 for you to explore QESEM on IBMQ simulators. For using QESEM on real QPUs please contact us at Qedma.
+# Note: this API token will be available during QIP 2026 for you to explore QESEM on IBMQ simulators. For using QESEM on real QPUs please contact us at Qedma.
 
 # %%
 # configuration
 # todo add your token here
-qedma_api_token =
-ibm_instance = "crn:v1:bluemix:public:quantum-computing:us-east:a/test::"
+qedma_api_token = "mmW_dHllhERPRyiZ-XhIfKN8mzuqnQ4EwmeIJHyITyg"
+ibm_instance = "crn:v1:bluemix:public:quantum-computing:us-east:a/e04323988bc6476ea650cb531d87b412:4270fa45-5a7c-46cf-8667-d2b1779d2227::"
 
 qedma_client = qedma_api.Client(api_token=qedma_api_token)
 provider = qedma_api.IBMQProvider(instance=ibm_instance)
@@ -511,20 +511,27 @@ qedma_client.start_job(
 
 # %%
 job_res = qedma_client.wait_for_job_complete(  # Blocking - takes 3-5 minutes
-    job_id=job.job_id,
+    job_id=job_id_ex2,
 )
-for i, obs in enumerate(obs_list_ex2):
-    print("-" * 10)
-    print("Observable: " + ["Average Magnetization", "ZZZZ"][i])
-    print(f"Ideal: {qiskit.quantum_info.Statevector(circ_ex2).expectation_value(obs).real}")
-    print(f"Noisy: {job_res.noisy_results[i][1].value} \u00b1 {job_res.noisy_results[i][1].error_bar}")
-    print(f"QESEM: {job_res.results[i][1].value} \u00b1 {job_res.results[i][1].error_bar}")
 
+
+# %%
+# Names for the observables
+observable_names = ["Average Magnetization", "ZZZZ"]
+
+for circuit_result in job_res.results:
+    for i, (observable, result) in enumerate(circuit_result):
+        print("-" * 10)
+        print(f"Observable name: {observable_names[i]}")
+        print(f"Observable:      {observable}")
+        print(f"Ideal:           {qiskit.quantum_info.Statevector(circ_ex2).expectation_value(obs_list_ex2[i]).real:.6f}")
+        print(f"QESEM:           {result.qesem}")
+        print(f"Unmitigated:     {result.unmitigated}")
+        print()
 
 print("-" * 10)
 # Some of the data gathered during a QESEM run.
 print(f"Gate fidelities found: {job_res.execution_details.gate_fidelities}")
-
 
 # %%
 # Results as a graph
@@ -533,40 +540,27 @@ width = 0.06
 
 fig, ax = plt.subplots(figsize=(4, 2.5 * 1.5))
 
+# Extract values from the new structure
+ideal_values = [qiskit.quantum_info.Statevector(circ_ex2).expectation_value(obs).real for obs in [avg_magnetization_ex2, all_z_ex2]]
+unmitigated_values = [job_res.results[0][i][1].unmitigated.value for i in range(2)]
+unmitigated_errors = [job_res.results[0][i][1].unmitigated.error_bar for i in range(2)]
+qesem_values = [job_res.results[0][i][1].qesem.value for i in range(2)]
+qesem_errors = [job_res.results[0][i][1].qesem.error_bar for i in range(2)]
+
 # Plot the bars side by side
-ax.bar(
-    x - width,
-    [qiskit.quantum_info.Statevector(circ_ex2).expectation_value(obs).real for obs in [avg_magnetization_ex2, all_z_ex2]],
-    width,
-    label="Ideal",
-)
-ax.bar(
-    x,
-    [job_res.noisy_results[0][1].value, job_res.noisy_results[1][1].value],
-    width,
-    label="Noisy",
-    yerr=[job_res.noisy_results[0][1].error_bar, job_res.noisy_results[1][1].error_bar],
-    capsize=6,
-)
-ax.bar(
-    x + width,
-    [job_res.results[0][1].value, job_res.results[1][1].value],
-    width,
-    label="QESEM",
-    yerr=[job_res.results[0][1].error_bar, job_res.results[1][1].error_bar],
-    capsize=6,
-)
+ax.bar(x - width, ideal_values, width, label="Ideal")
+ax.bar(x, unmitigated_values, width, label="Unmitigated", yerr=unmitigated_errors, capsize=6)
+ax.bar(x + width, qesem_values, width, label="QESEM", yerr=qesem_errors, capsize=6)
 
 ax.set_xticks(x)
 ax.set_xticklabels(["Average Magnetization", "ZZZZ"])
-ax.set_title(r"Comparing Ideal, Noisy and QESEM for $|\psi\rangle = 0.6|0000\rangle+0.8|1111\rangle$ ")
+ax.set_title(r"Comparing Ideal, Unmitigated and QESEM for $|\psi\rangle = 0.6|0000\rangle+0.8|1111\rangle$ ")
 ax.legend()
 
 plt.tight_layout()
 plt.grid(axis="y")
 plt.axhline(0, color="black", linewidth=2.5)  # y=0, bold black line
 plt.show()
-
 
 # %% [markdown]
 # ## 2.2 Key Concepts
@@ -1046,13 +1040,16 @@ print("Reading QESEM results...")
 qesem_job_results = qedma_client.wait_for_job_complete(job_ex4_2.job_id)
 print("Job completed successfully!")
 
-# Extract results for our observable
-mitigated_expectation = qesem_job_results.results[0][1].value
-mitigated_std = qesem_job_results.results[0][1].error_bar
+# Extract results for our observable (first circuit, first observable)
+circuit_result = qesem_job_results.results[0]  # First circuit result
+observable, result = circuit_result[0]  # First (observable, result) pair
 
-# Get noisy results for comparison
-noisy_expectation = qesem_job_results.noisy_results[0][1].value
-noisy_std = qesem_job_results.noisy_results[0][1].error_bar
+mitigated_expectation = result.qesem.value
+mitigated_std = result.qesem.error_bar
+
+# Get unmitigated results for comparison
+noisy_expectation = result.unmitigated.value
+noisy_std = result.unmitigated.error_bar
 
 # Calculate ideal value for comparison
 ideal_expectation = qiskit.quantum_info.Statevector(circ_ex4).expectation_value(observable_ex4).real
@@ -1065,13 +1062,13 @@ print(f"Observable: Global Z measurement (Z^⊗{n_qubits_ex4})")
 print(f"Circuit: {n_steps_ex4}-step Kicked Ising, {n_qubits_ex4} qubits")
 print(f"Precision target: {precision_ex4_2}")
 print("-" * 60)
-print(f"Ideal value:      {ideal_expectation:.6f}")
-print(f"Noisy value:      {noisy_expectation:.6f} ± {noisy_std:.6f}")
-print(f"QESEM value:      {mitigated_expectation:.6f} ± {mitigated_std:.6f}")
+print(f"Ideal value:         {ideal_expectation:.6f}")
+print(f"Unmitigated value:   {noisy_expectation:.6f} ± {noisy_std:.6f}")
+print(f"QESEM value:         {mitigated_expectation:.6f} ± {mitigated_std:.6f}")
 print("-" * 60)
-print(f"Noisy error:      {abs(noisy_expectation - ideal_expectation):.6f}")
-print(f"QESEM error:      {abs(mitigated_expectation - ideal_expectation):.6f}")
-print(f"Error reduction:  {abs(noisy_expectation - ideal_expectation)/abs(mitigated_expectation - ideal_expectation if mitigated_expectation != ideal_expectation else 1):.1f}x")
+print(f"Unmitigated error:   {abs(noisy_expectation - ideal_expectation):.6f}")
+print(f"QESEM error:         {abs(mitigated_expectation - ideal_expectation):.6f}")
+print(f"Error reduction:     {abs(noisy_expectation - ideal_expectation)/abs(mitigated_expectation - ideal_expectation if mitigated_expectation != ideal_expectation else 1):.1f}x")
 print("-" * 60)
 print(f"QESEM within target precision: {'✓' if abs(mitigated_expectation - ideal_expectation) <= precision_ex4_2 else '✗'}")
 print("-" * 60)
